@@ -1,8 +1,12 @@
 import logging
+import re
 import time
 from urllib.parse import urlparse
 
 import pandas as pd
+
+_MOJIBAKE_RE = re.compile(r"[\x80-\x9f]|ã[\S]{0,2}[ã±-ãŽ]|ï¼|è²·|æ¥ç|é·|ç¥")
+MOJIBAKE_THRESHOLD = 0.02
 import requests
 import trafilatura
 from googlenewsdecoder import new_decoderv1
@@ -50,6 +54,11 @@ def crawl_article(url: str) -> dict | None:
 
         if len(body.strip()) < 50:
             logger.warning("본문이 너무 짧음 (스킵): %s", real_url)
+            return None
+
+        mojibake_ratio = len(_MOJIBAKE_RE.findall(body)) / len(body)
+        if mojibake_ratio > MOJIBAKE_THRESHOLD:
+            logger.warning("인코딩 깨짐 (스킵, %.1f%%): %s", mojibake_ratio * 100, real_url)
             return None
 
         return {

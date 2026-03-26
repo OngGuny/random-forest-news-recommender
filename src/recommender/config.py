@@ -9,6 +9,7 @@ RF_PARAMS = {
     "n_estimators": 200,
     "max_depth": 20,
     "min_samples_split": 5,
+    "class_weight": "balanced",
     "random_state": 42,
 }
 
