@@ -2,7 +2,7 @@
 뉴스기사 라벨링데이터/
 
 # 모델 산출물
-models/
+artifacts/
 output/
 
 # Python
