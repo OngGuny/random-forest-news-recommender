@@ -85,8 +85,29 @@ def predict(df: pd.DataFrame, output_format: str = "json") -> list[dict]:
             "source": row["source"],
             "prediction": int(predictions[i]),
             "probability": round(float(probabilities[i]), 4),
-            "label": "👍 추천" if predictions[i] == 1 else "👎 스킵",
+            "label": "추천" if predictions[i] == 1 else "스킵",
         })
+
+    # 확률 내림차순 정렬 + 순위 부여
+    results.sort(key=lambda r: r["probability"], reverse=True)
+    for rank, r in enumerate(results, 1):
+        r["rank"] = rank
+
+    # 통계 요약
+    like_count = sum(1 for r in results if r["prediction"] == 1)
+    skip_count = len(results) - like_count
+    probs = [r["probability"] for r in results]
+    summary = {
+        "total": len(results),
+        "추천": like_count,
+        "스킵": skip_count,
+        "probability_mean": round(sum(probs) / len(probs), 4),
+        "probability_max": max(probs),
+        "probability_min": min(probs),
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
+    }
+
+    output_data = {"summary": summary, "results": results}
 
     # 결과 저장
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -95,7 +116,7 @@ def predict(df: pd.DataFrame, output_format: str = "json") -> list[dict]:
     if output_format == "json":
         output_path = OUTPUT_DIR / f"predictions_{timestamp}.json"
         with open(output_path, "w", encoding="utf-8") as f:
-            json.dump(results, f, ensure_ascii=False, indent=2)
+            json.dump(output_data, f, ensure_ascii=False, indent=2)
     else:
         output_path = OUTPUT_DIR / f"predictions_{timestamp}.csv"
         pd.DataFrame(results).to_csv(output_path, index=False)
