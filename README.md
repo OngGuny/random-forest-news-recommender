@@ -19,6 +19,19 @@ RandomForest 기반 뉴스 기사 추천 이진 분류기
 - 학습 데이터: 157건 (추천 120 / 스킵 37)
 - Train/Test 분할: 8:2 (stratified)
 
+## 기술 스택
+
+| 구분 | 기술 |
+|---|---|
+| **언어** | Python 3.12+ |
+| **패키지 관리** | uv |
+| **ML** | scikit-learn (RandomForest) |
+| **NLP** | Kiwi (형태소 분석), TF-IDF |
+| **크롤링** | requests, BeautifulSoup4, trafilatura, googlenewsdecoder |
+| **데이터** | pandas, openpyxl (엑셀) |
+| **직렬화** | joblib (모델 저장) |
+| **테스트** | pytest |
+
 ## 파이프라인
 
 ```
